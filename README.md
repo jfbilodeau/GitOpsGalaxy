@@ -57,48 +57,34 @@ CI/CD
 ## Architecture
 Below is a simple Mermaid diagram illustrating the application's structure and GitOps deployment flow.
 
-<!-- Mermaid diagram: GitHub's renderer requires literal line breaks in labels; use <br> for line breaks -->
 ```mermaid
-flowchart LR
-    subgraph Developer
-        Dev[Developer]
-        Local[Local Dev<br> (dotnet run)]
+flowchart TB
+    subgraph DevFlow [Development & Repo]
+        Dev[Developer\n(local dev / VS)] -->|push| Repo[(GitOpsGalaxy\nGitHub Repo)]
+        Repo -->|contains\nSource + Bicep| BicepFile[bicep/gitopsgalaxy-appservice.bicep]
     end
 
-    subgraph GitHub["GitHub Repository<br> (GitOps layout)"]
-        Source[Source: Razor Pages (Pages/, Program.cs)]
-        Bicep[bicep/gitopsgalaxy-appservice.bicep]
-        Workflow[.github/workflows/gitops-galaxy-cicd.yml]
+    subgraph CI_CD [CI / CD]
+        Repo -->|webhook| Actions[GitHub Actions\n(ci/cd workflow)]
+        Actions -->|build\n(dotnet / publish)| Build[Build Artifact]
+        Actions -->|deploy using Bicep| Deploy[Bicep → ARM Deployment]
     end
 
-    subgraph CI_CD["CI / CD"]
-        Actions[GitHub Actions<br> (Build & Test)]
-        Artifact[Build Artifact (zip)]
+    subgraph AzureCloud [Azure]
+        Deploy --> AppService[Azure App Service\n(Web App)]
+        AppService --> App[Razor Pages App\n(Pages/, Program.cs, appsettings.json)]
+        App -->|reads config| AppSettings[appsettings.json]
     end
 
-    subgraph Azure["Azure"]
-        ARM[Azure Resource Manager]
-        AppService[Azure App Service<br> (Razor Pages App)]
-        KeyVault[Azure Key Vault<br> (Secrets)]
-        AppInsights[Application Insights<br> (Monitoring)]
+    subgraph Runtime [Runtime & Access]
+        Browser[User Browser] -->|HTTP(S)| AppService
+        LocalDev[Run locally\ndotnet run / VS] -->|localhost:5001| App
     end
 
-    Dev -->|push / PR| Source
-    Dev --> Local
-    Source --> Workflow
-    Workflow --> Actions
-    Actions --> Artifact
-    Artifact -->|deploy via az / bicep| ARM
-    Bicep --> ARM
-    ARM --> AppService
-    AppService -->|serves| Browser[User Browser]
-    ARM --> KeyVault
-    AppService --> AppInsights
-
-    classDef repo fill:#f6f8fa,stroke:#0366d6,stroke-width:1px;
-    class GitHub repo;
-    classDef azure fill:#eef6ff,stroke:#0078d4,stroke-width:1px;
-    class Azure azure;
+    style DevFlow fill:#f9f,stroke:#333,stroke-width:1px
+    style CI_CD fill:#fffbcc,stroke:#333,stroke-width:1px
+    style AzureCloud fill:#e8f7ff,stroke:#333,stroke-width:1px
+    style Runtime fill:#e6ffe6,stroke:#333,stroke-width:1px
 ```
 
 Contributing
