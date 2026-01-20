@@ -54,6 +54,52 @@ az deployment group create --resource-group <RG_NAME> --template-file bicep/gito
 CI/CD
 - This repo includes a sample GitHub Actions workflow at `.github/workflows/gitops-galaxy-cicd.yml` used by the demo to build and (optionally) publish artifacts. Adjust secrets and targets to match your environment.
 
+## Architecture
+Below is a simple Mermaid diagram illustrating the application's structure and GitOps deployment flow.
+
+```mermaid
+flowchart LR
+    subgraph Developer
+        Dev[Developer]
+        Local[Local Dev\n(dotnet run)]
+    end
+
+    subgraph GitHub["GitHub Repository\n(GitOps layout)"]
+        Source[Source: Razor Pages (Pages/, Program.cs)]
+        Bicep[bicep/gitopsgalaxy-appservice.bicep]
+        Workflow[.github/workflows/gitops-galaxy-cicd.yml]
+    end
+
+    subgraph CI_CD["CI / CD"]
+        Actions[GitHub Actions\n(Build & Test)]
+        Artifact[Build Artifact (zip)]
+    end
+
+    subgraph Azure["Azure"]
+        ARM[Azure Resource Manager]
+        AppService[Azure App Service\n(Razor Pages App)]
+        KeyVault[Azure Key Vault\n(Secrets)]
+        AppInsights[Application Insights\n(Monitoring)]
+    end
+
+    Dev -->|push / PR| Source
+    Dev --> Local
+    Source --> Workflow
+    Workflow --> Actions
+    Actions --> Artifact
+    Artifact -->|deploy via az / bicep| ARM
+    Bicep --> ARM
+    ARM --> AppService
+    AppService -->|serves| Browser[User Browser]
+    ARM --> KeyVault
+    AppService --> AppInsights
+
+    classDef repo fill:#f6f8fa,stroke:#0366d6,stroke-width:1px;
+    class GitHub repo;
+    classDef azure fill:#eef6ff,stroke:#0078d4,stroke-width:1px;
+    class Azure azure;
+```
+
 Contributing
 - This repo is a demo. Feel free to fork and experiment. For changes that you want considered upstream, open a pull request against the `main` branch.
 
