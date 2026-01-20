@@ -58,33 +58,16 @@ CI/CD
 Below is a simple Mermaid diagram illustrating the application's structure and GitOps deployment flow.
 
 ```mermaid
-flowchart TB
-    subgraph DevFlow [Development & Repo]
-        Dev[Developer\n(local dev / VS)] -->|push| Repo[(GitOpsGalaxy\nGitHub Repo)]
-        Repo -->|contains\nSource + Bicep| BicepFile[bicep/gitopsgalaxy-appservice.bicep]
-    end
-
-    subgraph CI_CD [CI / CD]
-        Repo -->|webhook| Actions[GitHub Actions\n(ci/cd workflow)]
-        Actions -->|build\n(dotnet / publish)| Build[Build Artifact]
-        Actions -->|deploy using Bicep| Deploy[Bicep → ARM Deployment]
-    end
-
-    subgraph AzureCloud [Azure]
-        Deploy --> AppService[Azure App Service\n(Web App)]
-        AppService --> App[Razor Pages App\n(Pages/, Program.cs, appsettings.json)]
-        App -->|reads config| AppSettings[appsettings.json]
-    end
-
-    subgraph Runtime [Runtime & Access]
-        Browser[User Browser] -->|HTTP(S)| AppService
-        LocalDev[Run locally\ndotnet run / VS] -->|localhost:5001| App
-    end
-
-    style DevFlow fill:#f9f,stroke:#333,stroke-width:1px
-    style CI_CD fill:#fffbcc,stroke:#333,stroke-width:1px
-    style AzureCloud fill:#e8f7ff,stroke:#333,stroke-width:1px
-    style Runtime fill:#e6ffe6,stroke:#333,stroke-width:1px
+flowchart LR
+  Dev[Developer] -->|push/PR| Repo[GitHub Repo]
+  Dev -->|local run| Local[Local dev (dotnet run)]
+  Repo --> CI[GitHub Actions]
+  CI --> Artifact[Build Artifact]
+  Artifact -->|deploy| Infra[ARM / Bicep]
+  Infra --> App[App Service (Razor Pages)]
+  App -->|serves| Browser[User Browser]
+  Infra --> KeyVault[Key Vault]
+  App --> Insights[App Insights]
 ```
 
 Contributing
