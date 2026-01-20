@@ -57,30 +57,30 @@ CI/CD
 ## Architecture
 Below is a simple Mermaid diagram illustrating the application's structure and GitOps deployment flow.
 
-<!-- Mermaid diagram: GitHub's renderer requires literal line breaks in labels; use <br/> for line breaks -->
+<!-- Mermaid diagram: GitHub's renderer requires literal line breaks in labels; use <br> for line breaks -->
 ```mermaid
 flowchart LR
     subgraph Developer
         Dev[Developer]
-        Local[Local Dev<br/> (dotnet run)]
+        Local[Local Dev<br> (dotnet run)]
     end
 
-    subgraph GitHub["GitHub Repository<br/> (GitOps layout)"]
+    subgraph GitHub["GitHub Repository<br> (GitOps layout)"]
         Source[Source: Razor Pages (Pages/, Program.cs)]
         Bicep[bicep/gitopsgalaxy-appservice.bicep]
         Workflow[.github/workflows/gitops-galaxy-cicd.yml]
     end
 
     subgraph CI_CD["CI / CD"]
-        Actions[GitHub Actions<br/> (Build & Test)]
+        Actions[GitHub Actions<br> (Build & Test)]
         Artifact[Build Artifact (zip)]
     end
 
     subgraph Azure["Azure"]
         ARM[Azure Resource Manager]
-        AppService[Azure App Service<br/> (Razor Pages App)]
-        KeyVault[Azure Key Vault<br/> (Secrets)]
-        AppInsights[Application Insights<br/> (Monitoring)]
+        AppService[Azure App Service<br> (Razor Pages App)]
+        KeyVault[Azure Key Vault<br> (Secrets)]
+        AppInsights[Application Insights<br> (Monitoring)]
     end
 
     Dev -->|push / PR| Source
