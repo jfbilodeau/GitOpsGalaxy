@@ -44,7 +44,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: IaC
-        run: az deployment group create --resource-group GitOpsGalaxy --template-file bicep/gitopsgalaxy-appservice.bicep --parameters location='canadacentral' appServicePlanName='GitOpsGalaxyDemo-asp' webAppName='gitopsgalaxyprod'
+        run: az deployment group create --resource-group GitOpsGalaxy --template-file bicep/gitopsgalaxy-appservice.bicep --parameters location='canadacentral' appServicePlanName='GitOpsGalaxyDemo-asp' webAppName='gitopsgalaxyprod' skuName='P0V3'
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
