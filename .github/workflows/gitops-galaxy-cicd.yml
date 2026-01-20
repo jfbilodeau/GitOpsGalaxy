@@ -36,3 +36,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test --no-build --verbosity normal --configuration Release
+
+      - name: IaC
+        run: az deployment group create --resource-group GitOpsGalaxy --template-file bicep/gitopsgalaxy-appservice.bicep --parameters location='canadacentral' appServicePlanName='GitOpsGalaxyDemo-asp' webAppName='gitopsgalaxyprod'
